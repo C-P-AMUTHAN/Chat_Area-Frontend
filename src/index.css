@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-gray-800;
+  }
+}
+
+@layer components {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Profile Container */
+.profile-container {
+  padding: 16px;
+}
+
+/* Profile Header */
+.profile-header {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header-content {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  background-color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.contact-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.contact-phone {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.block-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background-color: #ef4444;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.block-button:hover {
+  background-color: #dc2626;
+}
+
+.tabs {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab {
+  width: 50%;
+  padding: 12px;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background-color: #f3f4f6;
+}
+
+/* Order Summary */
+.order-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.order-summary-card {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.order-summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.edit-button {
+  padding: 4px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  color: black;
+}
+
+/* Last Order */
+.last-order {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.last-order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.last-order-id {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.search-button {
+  padding: 4px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  color: black;
+}
+
+.last-order-status {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.status-tag {
+  background-color: #10b981;
+  color: #064e3b;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.order-date {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.last-order-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-total {
+  font-weight: 700;
+}
+
+.details-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.details-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* WooCommerce Notes */
+.woocommerce-notes {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notes-tabs {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.notes-tab {
+  width: 50%;
+  padding: 12px;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.notes-tab:hover {
+  background-color: #f3f4f6;
+}
+
+.notes-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.note {
+  display: flex;
+  justify-content: space-between;
+}
+
+.note-label {
+  font-weight: 500;
+}
+
+.note-info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.note-value {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.edit-note {
+  padding: 4px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.edit-note:hover {
+  color: black;
+}
+
