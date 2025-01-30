@@ -37,6 +37,8 @@ app.use('/api/messages', require('./routes/webhook'));
 app.use('/api/contacts', contactsRoutes);
 app.use('/api/webhook', webhookRoutes);
 
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
