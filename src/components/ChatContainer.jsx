@@ -4,7 +4,9 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
-import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send } from "lucide-react"; // Imported icons
+import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon, PinIcon } from "lucide-react"; // Imported icons
+import { Paperclip, Image, Camera, FileText, User, BarChart2, Link, Edit3 } from "lucide-react";
+
 
 // Styled Components
 const Container = styled.div`
@@ -454,11 +456,12 @@ const EditNote = styled.div`
 
 const ChatApp = () => {
   const [contacts, setContacts] = useState([]);
-  const [selectedContact, setSelectedContact] = useState(null);
+  const [selectedContact, setSelectedContact] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const socket = useRef(null);
   const messagesEndRef = useRef(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     axios
@@ -559,9 +562,9 @@ const ChatApp = () => {
     {selectedContact ? (
       <>
         <ChatHeader>
-          <div className="header-details">
-            <div className="avatar-header">
-              <div className="avatar headavatar ">
+          <div className="header-details" >
+            <div className="avatar-header cursor-pointer" onClick={() => setSelectedContact(!selectedContact)}>
+              <div className="avatar headavatar">
                 {selectedContact.name?.[0]?.toUpperCase() || selectedContact.phone_number?.[0]}
               </div>
               <div>
@@ -571,12 +574,12 @@ const ChatApp = () => {
             </div>
           </div>
           <div className="search">
-            <div className="search-chat" >
+            <div className="search-chat cursor-pointer" >
               <SearchIcon className="icon" onClick={() => { /* handle search click */ }} width={20} />
             </div>
           </div>
         </ChatHeader>
-        <Messages>
+        <Messages className="relative">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.sent ? "sent" : "received"}`}>
               {msg.text}
@@ -586,21 +589,57 @@ const ChatApp = () => {
             </div>
           ))}
           <div ref={messagesEndRef} />
+          {showMenu && (
+            <div className="fixed bottom-15 left-80 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-20">
+              <ul className="py-2 text-sm text-gray-700">
+                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <Image size={16} className="mr-2" /> Photos & videos
+                </li>
+                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <Camera size={16} className="mr-2" /> Camera
+                </li>
+                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <FileText size={16} className="mr-2" /> Document
+                </li>
+                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <User size={16} className="mr-2" /> Contact
+                </li>
+              </ul>
+            </div>
+    )}
         </Messages>
-        <MessageInput>
-          <input className="input-field" placeholder="Type a message"
-           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => {
-          if (e.key === "Enter" && newMessage.trim()) {
-          handleSendMessage();
-          }
-          }}
+        <MessageInput className="flex items-center gap-2 relative">
+          <SmileIcon className="cursor-pointer text-center hover:text-[#4caf50]" />
+  
+          <div className="">
+          <Paperclip
+          className="cursor-pointer text-center hover:text-[#4caf50]"
+          onClick={() => setShowMenu(!showMenu)}
           />
-          <button className="send-button" onClick={handleSendMessage}>
-            {newMessage.trim() ? <Send size={15}/> : <Mic size={15} />}
-          </button>
-        </MessageInput>
+    
+  </div>
+
+  <input
+    className="flex-1 px-3 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#4caf50]"
+    placeholder="Type a message"
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" && newMessage.trim()) {
+        handleSendMessage();
+      }
+    }}
+  />
+  
+  <button
+    className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-[#4caf50] text-white hover:bg-green-500"
+    onClick={handleSendMessage}
+  >
+    {newMessage.trim() ? <Send size={20} /> : <Mic size={20} />}
+  </button>
+</MessageInput>
+
+
       </>
     ) : (
       <div style={{ margin: "auto", color: "#666" }}>
@@ -608,7 +647,7 @@ const ChatApp = () => {
       </div>
     )}
   </ChatArea>
-
+    {/* {selectedContact ? " " : ``} */}
   {selectedContact && (
     <ChatProfile>
     <ProfileContainer>
@@ -633,7 +672,7 @@ const ChatApp = () => {
           </div>
           {/* Block Button */}
           <div className="flex items-center h-fit py-2 px-4 text-sm font-medium text-white bg-red-500 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-red-600">
-            <BanIcon className="icon" />
+            <BanIcon className="icon mr-1" />
             Block
           </div>
         </div>
