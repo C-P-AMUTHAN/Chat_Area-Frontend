@@ -202,44 +202,38 @@ const ProfileHeader = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
 
-const ProfileHeaderContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 24px;
-`;
-
-const ProfileInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-`;
-
-const Avatar = styled.div`
-  width: 64px;
-  height: 64px;
-  background-color: #16a34a;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-  font-weight: bold;
-`;
-
-const ContactName = styled.div`
+  .profile-header-content{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .profile-info{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .avatar{
+   width: 64px;
+    height: 64px;
+    background-color: #16a34a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  .contact-name{
   font-size: 1.125rem;
   font-weight: 700;
-`;
-
-const ContactPhone = styled.div`
+  }
+  .contact-phone{
   color: #6b7280;
   font-size: 0.875rem;
-`;
-
-const BlockButton = styled.div`
+  }
+  .block-button{
   display: flex;
   align-items: center;
   padding: 8px 16px;
@@ -254,7 +248,10 @@ const BlockButton = styled.div`
   &:hover {
     background-color: #dc2626;
   }
+  }
+
 `;
+
 
 const Tabs = styled.div`
   display: flex;
@@ -614,10 +611,10 @@ const ChatApp = () => {
 
   {selectedContact && (
     <ChatProfile>
-    <div className="profile-container">
+    <ProfileContainer>
       {/* Profile Header and Information */}
-      <div className="profile-header">
-        <div className="profile-header-content">
+      <ProfileHeader >
+        <div className="flex justify-between mb-6 ">
           <div className="profile-info">
             {/* Avatar: Display first letter of the contact's name */}
             <div className="avatar">
@@ -635,20 +632,20 @@ const ChatApp = () => {
             </div>
           </div>
           {/* Block Button */}
-          <button className="block-button">
+          <div className="flex items-center h-fit py-2 px-4 text-sm font-medium text-white bg-red-500 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-red-600">
             <BanIcon className="icon" />
             Block
-          </button>
+          </div>
         </div>
   
         <div className="tabs">
           <button className="tab">Profile</button>
           <button className="tab">Assisted Sales</button>
         </div>
-      </div>
+      </ProfileHeader>
   
       {/* Order Summary Cards */}
-      <div className="order-summary">
+      <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="order-summary-card">
           <h3 className="order-summary-title">Orders Count</h3>
           <p className="order-summary-value">3</p>
@@ -714,7 +711,7 @@ const ChatApp = () => {
           </div>
         </div>
       </div>
-    </div>
+    </ProfileContainer>
   </ChatProfile>
   
   )}
