@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
-import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon } from "lucide-react"; // Imported icons
+import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send } from "lucide-react"; // Imported icons
 
 // Styled Components
 const Container = styled.div`
@@ -93,9 +93,25 @@ const ChatHeader = styled.div`
   color: white;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
   .header-details {
+    width:full;
     margin-left: 10px;
+    display:flex;
+    
+
+
+    .avatar-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    
+    .headavatar{
+      width: 40px;
+      height: 40px;
+    }
 
     .chat-name {
       font-size: 16px;
@@ -105,6 +121,8 @@ const ChatHeader = styled.div`
     .status {
       font-size: 12px;
     }
+    
+    
   }
 `;
 
@@ -545,8 +563,20 @@ const ChatApp = () => {
       <>
         <ChatHeader>
           <div className="header-details">
-            <div className="chat-name">{selectedContact.name}</div>
-            <div className="status">Online</div>
+            <div className="avatar-header">
+              <div className="avatar headavatar ">
+                {selectedContact.name?.[0]?.toUpperCase() || selectedContact.phone_number?.[0]}
+              </div>
+              <div>
+                <div className="chat-name">{selectedContact.name}</div>
+                <div className="status">Online</div>
+              </div>
+            </div>
+          </div>
+          <div className="search">
+            <div className="search-chat" >
+              <SearchIcon className="icon" onClick={() => { /* handle search click */ }} width={20} />
+            </div>
           </div>
         </ChatHeader>
         <Messages>
@@ -561,19 +591,17 @@ const ChatApp = () => {
           <div ref={messagesEndRef} />
         </Messages>
         <MessageInput>
-          <input
-            className="input-field"
-            placeholder="Type a message"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSendMessage();
-              }
-            }}
+          <input className="input-field" placeholder="Type a message"
+           value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => {
+          if (e.key === "Enter" && newMessage.trim()) {
+          handleSendMessage();
+          }
+          }}
           />
           <button className="send-button" onClick={handleSendMessage}>
-            ➤
+            {newMessage.trim() ? <Send size={15}/> : <Mic size={15} />}
           </button>
         </MessageInput>
       </>
