@@ -4,8 +4,11 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
-import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon, PinIcon } from "lucide-react"; // Imported icons
-import { Paperclip, Image, Camera, FileText, User, BarChart2, Link, Edit3 } from "lucide-react";
+import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon, } from "lucide-react"; // Imported icons
+import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, } from "lucide-react";
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+
 
 
 // Styled Components
@@ -462,6 +465,10 @@ const ChatApp = () => {
   const socket = useRef(null);
   const messagesEndRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [activeTab, setActiveTab] = useState("Profile");
+  const [isChatbot, setIsChatbot] = useState(true);
+  const [assistedSalesMode, setAssistedSalesMode] = useState("Chatbot");
 
   useEffect(() => {
     axios
@@ -532,229 +539,322 @@ const ChatApp = () => {
     scrollToBottom();
   }, [messages]);
 
+  const handleEmojiSelect = (emoji) => {
+    console.log("Full Emoji Object:", emoji);
+    console.log("Selected Emoji:", emoji.native);
+    setNewMessage((prevMessage) => (prevMessage || "") + emoji.native); // Append emoji to existing text
+    setShowEmojiPicker(false); // Close emoji picker
+
+    // Delay to ensure state update before sending
+    setTimeout(() => {
+      handleSendMessage(); // Send the emoji immediately
+    }, 100);
+  };
+
+  const toggleMode = () => {
+    setIsChatbot((prev) => !prev);
+  };
+
   return (
     <Container>
-  <Sidebar>
-    <SearchBar placeholder="Search or start new chat" />
-    <ContactList>
-      {contacts.map((contact) => (
-        <ContactItem
-          key={contact.id}
-          selected={selectedContact?.id === contact.id}
-          onClick={() => setSelectedContact(contact)}
-        >
-          <div className="avatar">
-            {contact.name?.[0]?.toUpperCase() || contact.phone_number?.[0]}
-          </div>
-          <div className="contact-details">
-            <div className="contact-name">{contact.name}</div>
-            <div className="last-message">{contact.lastMessage}</div>
-          </div>
-          <div className="timestamp">
-            {dayjs(contact.timestamp).format("hh:mm A")}
-          </div>
-        </ContactItem>
-      ))}
-    </ContactList>
-  </Sidebar>
-
-  <ChatArea>
-    {selectedContact ? (
-      <>
-        <ChatHeader>
-          <div className="header-details" >
-            <div className="avatar-header cursor-pointer" onClick={() => setSelectedContact(!selectedContact)}>
-              <div className="avatar headavatar">
-                {selectedContact.name?.[0]?.toUpperCase() || selectedContact.phone_number?.[0]}
+      <Sidebar>
+        <SearchBar placeholder="Search or start new chat" />
+        <ContactList>
+          {contacts.map((contact) => (
+            <ContactItem
+            key={contact.id}
+            selected={selectedContact?.id === contact.id}
+            onClick={() => setSelectedContact(contact)}
+            >
+              <div className="avatar">
+                {contact.name?.[0]?.toUpperCase() || contact.phone_number?.[0]}
               </div>
-              <div>
-                <div className="chat-name">{selectedContact.name}</div>
-                <div className="status">Online</div>
+              <div className="contact-details">
+                <div className="contact-name">{contact.name}</div>
+                <div className="last-message">{contact.lastMessage}</div>
               </div>
-            </div>
-          </div>
-          <div className="search">
-            <div className="search-chat cursor-pointer" >
-              <SearchIcon className="icon" onClick={() => { /* handle search click */ }} width={20} />
-            </div>
-          </div>
-        </ChatHeader>
-        <Messages className="relative">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message ${msg.sent ? "sent" : "received"}`}>
-              {msg.text}
               <div className="timestamp">
-                {dayjs(msg.timestamp).format("hh:mm A")}
+                {dayjs(contact.timestamp).format("hh:mm A")}
               </div>
-            </div>
+            </ContactItem>
           ))}
-          <div ref={messagesEndRef} />
-          {showMenu && (
-            <div className="fixed bottom-15 left-80 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-20">
-              <ul className="py-2 text-sm text-gray-700">
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <Image size={16} className="mr-2" /> Photos & videos
-                </li>
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <Camera size={16} className="mr-2" /> Camera
-                </li>
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <FileText size={16} className="mr-2" /> Document
-                </li>
-                <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <User size={16} className="mr-2" /> Contact
-                </li>
-              </ul>
-            </div>
-    )}
-        </Messages>
-        <MessageInput className="flex items-center gap-2 relative">
-          <SmileIcon className="cursor-pointer text-center hover:text-[#4caf50]" />
-  
-          <div className="">
-          <Paperclip
-          className="cursor-pointer text-center hover:text-[#4caf50]"
-          onClick={() => setShowMenu(!showMenu)}
-          />
-    
-  </div>
+        </ContactList>
+      </Sidebar>
 
-  <input
-    className="flex-1 px-3 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#4caf50]"
-    placeholder="Type a message"
-    value={newMessage}
-    onChange={(e) => setNewMessage(e.target.value)}
-    onKeyDown={(e) => {
-      if (e.key === "Enter" && newMessage.trim()) {
-        handleSendMessage();
-      }
-    }}
-  />
-  
-  <button
-    className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-[#4caf50] text-white hover:bg-green-500"
-    onClick={handleSendMessage}
-  >
-    {newMessage.trim() ? <Send size={20} /> : <Mic size={20} />}
-  </button>
-</MessageInput>
+      <ChatArea>
+        {selectedContact ? (
+          <>
+            <ChatHeader>
+              <div className="header-details" >
+                <div className="avatar-header cursor-pointer" onClick={() => setSelectedContact(!selectedContact)}>
+                  <div className="avatar headavatar">
+                    {selectedContact.name?.[0]?.toUpperCase() || selectedContact.phone_number?.[0]}
+                  </div>
+                  <div>
+                    <div className="chat-name">{selectedContact.name}</div>
+                    <div className="status">Online</div>
+                  </div>
+                </div>
+              </div>
+              <div className="search">
+                <div className="search-chat cursor-pointer" >
+                  <SearchIcon className="icon" onClick={() => { /* handle search click */ }} width={20} />
+                </div>
+              </div>
+            </ChatHeader>
 
+            <Messages className="relative">
+              {messages.map((msg, idx) => (
+                <div key={idx} className={`message ${msg.sent ? "sent" : "received"}`}>
+                  {msg.text}
+                  <div className="timestamp">
+                    {dayjs(msg.timestamp).format("hh:mm A")}
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </Messages>
+            <MessageInput className="flex items-center gap-2 relative">
+              <div className="relative">
+                <SmileIcon
+                className="cursor-pointer text-center hover:text-[#4caf50]"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                />
+                {showEmojiPicker && (
+                  <div className="absolute bottom-12 left-0 z-50">
+                    <Picker data={data} onSelect={handleEmojiSelect} />
+                  </div>
+                )}
+              </div>
+              <div className="relative">
+                <Paperclip
+                className="cursor-pointer text-center hover:text-[#4caf50]"
+                onClick={() => setShowMenu(!showMenu)}
+                />
 
-      </>
-    ) : (
-      <div style={{ margin: "auto", color: "#666" }}>
-        Select a contact to start chatting
-      </div>
-    )}
-  </ChatArea>
-    {/* {selectedContact ? " " : ``} */}
-  {selectedContact && (
-    <ChatProfile>
-    <ProfileContainer>
-      {/* Profile Header and Information */}
-      <ProfileHeader >
-        <div className="flex justify-between mb-6 ">
-          <div className="profile-info">
-            {/* Avatar: Display first letter of the contact's name */}
-            <div className="avatar">
-              {selectedContact ? selectedContact.name?.[0]?.toUpperCase() : ''}
-            </div>
-            <div>
-              {/* Contact Name */}
-              <h2 className="contact-name">
-                {selectedContact ? selectedContact.name : 'Select a contact'}
-              </h2>
-              {/* Contact Phone Number */}
-              <p className="contact-phone">
-                {selectedContact ? selectedContact.phone_number : ''}
-              </p>
-            </div>
+                {showMenu && (
+                  <div className="absolute bottom-12 left-0 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-50">
+                    <ul className="py-2 text-sm text-gray-700">
+                      <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <Image size={16} className="mr-2" /> Photos & videos
+                      </li>
+                      <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <Camera size={16} className="mr-2" /> Camera
+                      </li>
+                      <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <FileText size={16} className="mr-2" /> Document
+                      </li>
+                      <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        <User size={16} className="mr-2" /> Contact
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <input
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#4caf50]"
+              placeholder="Type a message"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+              if (e.key === "Enter" && newMessage.trim()) {
+                handleSendMessage();
+              }
+              }}
+              />
+  
+              <button
+              className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-[#4caf50] text-white hover:bg-green-500"
+              onClick={handleSendMessage}
+              >
+                {newMessage.trim() ? <Send size={20} /> : <Mic size={20} />}
+              </button>
+            </MessageInput>
+          </>
+        ) : (
+          <div style={{ margin: "auto", color: "#666" }}>
+            Select a contact to start chatting
           </div>
-          {/* Block Button */}
-          <div className="flex items-center h-fit py-2 px-4 text-sm font-medium text-white bg-red-500 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-red-600">
-            <BanIcon className="icon mr-1" />
-            Block
-          </div>
-        </div>
+        )}
+      </ChatArea>
+      {/* {selectedContact ? " " : ``} */}
+      {selectedContact && (
+        <ChatProfile>
+          <ProfileContainer>
+            {/* Profile Header and Information */}
+            <ProfileHeader >
+              <div className="flex justify-between mb-6 ">
+                <div className="profile-info">
+                  {/* Avatar: Display first letter of the contact's name */}
+                  <div className="avatar">
+                    {selectedContact ? selectedContact.name?.[0]?.toUpperCase() : ''}
+                  </div>
+                  <div>
+                    {/* Contact Name */}
+                    <h2 className="contact-name">
+                      {selectedContact ? selectedContact.name : 'Select a contact'}
+                    </h2>
+                    {/* Contact Phone Number */}
+                    <p className="contact-phone">
+                      {selectedContact ? selectedContact.phone_number : ''}
+                    </p>
+                  </div>
+                </div>
+                {/* Block Button */}
+                <div className="flex items-center h-fit py-2 px-4 text-sm font-medium text-white bg-red-500 rounded-lg cursor-pointer transition-colors duration-300 hover:bg-red-600">
+                  <BanIcon className="icon mr-1" />
+                  Block
+                </div>
+              </div>
   
-        <div className="tabs">
-          <button className="tab">Profile</button>
-          <button className="tab">Assisted Sales</button>
-        </div>
-      </ProfileHeader>
+              {/* Tabs */}
+              <div className="tabs flex space-x-4 bg-gray-100 p-2 rounded-lg w-fit mx-auto justify-center text-center">
+                <button
+                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${
+                activeTab === "Profile"
+                ? "bg-green-600 text-white shadow-lg scale-105"
+                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                }`}
+                onClick={() => setActiveTab("Profile")}
+                >
+                  Profile
+                </button>
+
+                <button
+                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${
+                activeTab === "Assisted Sales"
+                ? "bg-green-600 text-white shadow-lg scale-105"
+                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                }`}
+                onClick={() => setActiveTab("Assisted Sales")}
+                >
+                  Assisted Sales
+                </button>
+              </div>
+            </ProfileHeader>
   
-      {/* Order Summary Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="order-summary-card">
-          <h3 className="order-summary-title">Orders Count</h3>
-          <p className="order-summary-value">3</p>
-        </div>
+            {/* Profile Tab Content */}
+            {activeTab === "Profile" && (
+              <>
+                {/* Order Summary Cards */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="order-summary-card">
+                    <h3 className="order-summary-title">Orders Count</h3>
+                    <p className="order-summary-value">3</p>
+                  </div>
+                  <div className="order-summary-card">
+                    <h3 className="order-summary-title">Total Order Value</h3>
+                    <p className="order-summary-value">₹2.58k</p>
+                  </div>
+                  <div className="order-summary-card">
+                    <div className="wallet-header">
+                      <h3 className="order-summary-title">Wallet</h3>
+                      <button className="edit-button">
+                        <EditIcon className="icon" />
+                      </button>
+                    </div>
+                    <p className="order-summary-value">₹0</p>
+                  </div>
+                </div>
+
+                {/* Last Order */}
+                <div className="last-order">
+                  <div className="last-order-header">
+                    <h3 className="last-order-id">88574</h3>
+                    <button className="search-button">
+                      <SearchIcon className="icon" />
+                    </button>
+                  </div>
+                  <div className="last-order-status">
+                    <span className="status-tag">FULFILLED</span>
+                    <span className="order-date">Ordered at Jul 30, 2024, 11:16:59 PM</span>
+                  </div>
+                  <div className="last-order-footer">
+                    <span className="order-total">₹911.00</span>
+                    <button className="details-button">
+                      Details
+                      <ChevronDownIcon className="icon" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* WooCommerce Notes */}
+                <div className="woocommerce-notes">
+                  <div className="notes-tabs">
+                    <button className="notes-tab">Address</button>
+                    <button className="notes-tab">Note</button>
+                  </div>
+                  <div className="notes-content">
+                    <div className="note">
+                      <span className="note-label">Email Address</span>
+                      <div className="note-info">
+                        <span className="note-value">mjperso15@gmail.com</span>
+                        <button className="edit-note">Edit</button>
+                      </div>
+                    </div>
+                    <div className="note">
+                      <span className="note-label">Address</span>
+                      <div className="note-info">
+                        <span className="note-value">No address provided</span>
+                        <button className="edit-note">Edit</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Assisted Sales Tab Content */}
+            {activeTab === "Assisted Sales" && (
+              <div className="assisted-sales">
+                <div className="flex justify-center gap-6">
+                  <p className="text-sm font-semibold">chatbot</p>
+                  <div
+                  className={`relative flex items-center justify-center w-16 h-8 p-1 rounded-full cursor-pointer transition-all duration-500 ${
+                  isChatbot ? "justify-start bg-gray-200" : "justify-end bg-green-400"
+                  }`}
+                  onClick={() => {
+                  toggleMode();
+                  setAssistedSalesMode(isChatbot ? "Human" : "Chatbot"); 
+                  }}
+                  >
+                    {/* Toggle Ball */}
+                    <div className="w-6 h-6 bg-green-700 rounded-full shadow-md flex items-center justify-center transition-all duration-1000">
+                    {isChatbot ? (
+                      <BotIcon className="w-4 h-4 text-white" onClick={() => setAssistedSalesMode("Chatbot")} />
+                    ) : (
+                      <UserIcon className="w-4 h-4 text-white" onClick={() => setAssistedSalesMode("Human")} />
+                    )}
+                    </div>
+                  </div>
+                  <p className="text-sm font-semibold">human</p>
+                </div>
+
+                {/* Chatbot Mode */}
+                {assistedSalesMode === "Chatbot" && (
+                  <div className="chatbot-content">
+                    <h3>Chatbot Assistance</h3>
+                    <p>AI-powered chatbot available for quick assistance.</p>
+                  </div>
+                )}
+
+                {/* Human Mode */}
+                {assistedSalesMode === "Human" && (
+                  <div className="human-content">
+                    <h3>Human Assistance</h3>
+                    <p>Connecting to a sales representative...</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+          </ProfileContainer>
+        </ChatProfile>
   
-        <div className="order-summary-card">
-          <h3 className="order-summary-title">Total Order Value</h3>
-          <p className="order-summary-value">₹2.58k</p>
-        </div>
-  
-        <div className="order-summary-card">
-          <div className="wallet-header">
-            <h3 className="order-summary-title">Wallet</h3>
-            <button className="edit-button">
-              <EditIcon className="icon" />
-            </button>
-          </div>
-          <p className="order-summary-value">₹0</p>
-        </div>
-      </div>
-  
-      {/* Last Order */}
-      <div className="last-order">
-        <div className="last-order-header">
-          <h3 className="last-order-id">88574</h3>
-          <button className="search-button">
-            <SearchIcon className="icon" />
-          </button>
-        </div>
-        <div className="last-order-status">
-          <span className="status-tag">FULFILLED</span>
-          <span className="order-date">Ordered at Jul 30, 2024, 11:16:59 PM</span>
-        </div>
-        <div className="last-order-footer">
-          <span className="order-total">₹911.00</span>
-          <button className="details-button">
-            Details
-            <ChevronDownIcon className="icon" />
-          </button>
-        </div>
-      </div>
-  
-      {/* WooCommerce Notes */}
-      <div className="woocommerce-notes">
-        <div className="notes-tabs">
-          <button className="notes-tab">Address</button>
-          <button className="notes-tab">Note</button>
-        </div>
-        <div className="notes-content">
-          <div className="note">
-            <span className="note-label">Email Address</span>
-            <div className="note-info">
-              <span className="note-value">mjperso15@gmail.com</span>
-              <button className="edit-note">Edit</button>
-            </div>
-          </div>
-          <div className="note">
-            <span className="note-label">Address</span>
-            <div className="note-info">
-              <span className="note-value">No address provided</span>
-              <button className="edit-note">Edit</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ProfileContainer>
-  </ChatProfile>
-  
-  )}
-</Container>
+      )}
+    </Container>
 
   );
 };
