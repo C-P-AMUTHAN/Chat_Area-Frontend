@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
 import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon, } from "lucide-react"; // Imported icons
-import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, } from "lucide-react";
+import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, Wallet ,Landmark   } from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 
@@ -469,6 +469,19 @@ const ChatApp = () => {
   const [activeTab, setActiveTab] = useState("Profile");
   const [isChatbot, setIsChatbot] = useState(true);
   const [assistedSalesMode, setAssistedSalesMode] = useState("Chatbot");
+  const [showWallet, setShowWallet] = useState(false);
+  const [showSearchOrder, setShowSearchOrder]= useState(false);
+  const [email, setEmail] = useState("mjperso15@gmail.com");
+  const [address, setAddress] = useState("No address provided");
+  const [editingField, setEditingField] = useState(null);
+  
+  const handleEdit = (field) => {
+    setEditingField(field);
+  };
+
+  const handleSave = () => {
+    setEditingField(null);
+  };
 
   useEffect(() => {
     axios
@@ -751,8 +764,20 @@ const ChatApp = () => {
                   <div className="order-summary-card">
                     <div className="wallet-header">
                       <h3 className="order-summary-title">Wallet</h3>
-                      <button className="edit-button">
-                        <EditIcon className="icon" />
+                      <button className="edit-button relative">
+                        <EditIcon className="icon" onClick={() => setShowWallet(!showWallet)} />
+                        {showWallet && (
+                            <div className="absolute bottom-10 -left-40 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-50">
+                            <ul className="py-2 text-sm text-gray-700">
+                              <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                <Wallet size={16} className="mr-2" /> Add Money 
+                              </li>
+                              <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                <Landmark   size={16} className="mr-2" /> withdraw
+                              </li>
+                            </ul>
+                            </div>
+                        )}
                       </button>
                     </div>
                     <p className="order-summary-value">₹0</p>
@@ -763,8 +788,11 @@ const ChatApp = () => {
                 <div className="last-order">
                   <div className="last-order-header">
                     <h3 className="last-order-id">88574</h3>
-                    <button className="search-button">
-                      <SearchIcon className="icon" />
+                    <div className="add-money" style={{ display: showSearchOrder ? "block" : "none" }}>  
+                      <input type="text" className="focus:outline-none focus:ring-0 border-b-2 border-gray-400" placeholder="search order" />
+                    </div>
+                    <button className="search-button"onClick={() => setShowSearchOrder(!showSearchOrder)}>
+                      <SearchIcon className="icon" size={20} />
                     </button>
                   </div>
                   <div className="last-order-status">
@@ -786,22 +814,48 @@ const ChatApp = () => {
                     <button className="notes-tab">Address</button>
                     <button className="notes-tab">Note</button>
                   </div>
-                  <div className="notes-content">
-                    <div className="note">
-                      <span className="note-label">Email Address</span>
-                      <div className="note-info">
-                        <span className="note-value">mjperso15@gmail.com</span>
-                        <button className="edit-note">Edit</button>
-                      </div>
-                    </div>
-                    <div className="note">
-                      <span className="note-label">Address</span>
-                      <div className="note-info">
-                        <span className="note-value">No address provided</span>
-                        <button className="edit-note">Edit</button>
-                      </div>
-                    </div>
-                  </div>
+                  <div className="notes-content space-y-4">
+                  <div className="note flex flex-col">
+          <span className="note-label font-bold">Email Address</span>
+          <div className="note-info flex justify-between items-center">
+            {editingField === "email" ? (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border p-1 rounded w-full"
+              />
+            ) : (
+              <span className="note-value">{email}</span>
+            )}
+            {editingField === "email" ? (
+              <button className="ml-2 bg-blue-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
+            ) : (
+              <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("email")}>Edit</button>
+            )}
+          </div>
+        </div>
+        <div className="note flex flex-col">
+          <span className="note-label font-bold">Address</span>
+          <div className="note-info flex justify-between items-center">
+            {editingField === "address" ? (
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="border p-1 rounded w-full"
+              />
+            ) : (
+              <span className="note-value">{address}</span>
+            )}
+            {editingField === "address" ? (
+              <button className="ml-2 bg-blue-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
+            ) : (
+              <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("address")}>Edit</button>
+            )}
+          </div>
+        </div>
+      </div>
                 </div>
               </>
             )}
@@ -810,7 +864,7 @@ const ChatApp = () => {
             {activeTab === "Assisted Sales" && (
               <div className="assisted-sales">
                 <div className="flex justify-center gap-6">
-                  <p className="text-sm font-semibold">chatbot</p>
+                  <p className="text-sm font-semibold">Chatbot Assistance</p>
                   <div
                   className={`relative flex items-center justify-center w-16 h-8 p-1 rounded-full cursor-pointer transition-all duration-500 ${
                   isChatbot ? "justify-start bg-gray-200" : "justify-end bg-green-400"
@@ -829,13 +883,13 @@ const ChatApp = () => {
                     )}
                     </div>
                   </div>
-                  <p className="text-sm font-semibold">human</p>
+                  <p className="text-sm font-semibold">Human Assistance</p>
                 </div>
 
                 {/* Chatbot Mode */}
                 {assistedSalesMode === "Chatbot" && (
                   <div className="chatbot-content">
-                    <h3>Chatbot Assistance</h3>
+                    <h3 className="text-center">Chatbot Assistance</h3>
                     <p>AI-powered chatbot available for quick assistance.</p>
                   </div>
                 )}
@@ -843,7 +897,7 @@ const ChatApp = () => {
                 {/* Human Mode */}
                 {assistedSalesMode === "Human" && (
                   <div className="human-content">
-                    <h3>Human Assistance</h3>
+                    <h3 className="text-center">Human Assistance</h3>
                     <p>Connecting to a sales representative...</p>
                   </div>
                 )}
