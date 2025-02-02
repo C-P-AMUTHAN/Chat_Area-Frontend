@@ -130,12 +130,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.last-order-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
 .last-order-id {
   font-size: 1.25rem;
   font-weight: 700;

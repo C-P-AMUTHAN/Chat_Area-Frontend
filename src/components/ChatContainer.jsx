@@ -4,10 +4,11 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
-import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon, } from "lucide-react"; // Imported icons
-import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, Wallet ,Landmark   } from "lucide-react";
+import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon,Search } from "lucide-react"; // Imported icons
+import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, Wallet ,Landmark, ListFilter,} from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
+import RatingStars from "./LastOrder/RatingStars";
 
 
 
@@ -470,7 +471,7 @@ const ChatApp = () => {
   const [isChatbot, setIsChatbot] = useState(true);
   const [assistedSalesMode, setAssistedSalesMode] = useState("Chatbot");
   const [showWallet, setShowWallet] = useState(false);
-  const [showSearchOrder, setShowSearchOrder]= useState(false);
+  const [showSearchchat, setShowSearchchat]= useState(false);
   const [email, setEmail] = useState("mjperso15@gmail.com");
   const [address, setAddress] = useState("No address provided");
   const [editingField, setEditingField] = useState(null);
@@ -630,7 +631,7 @@ const ChatApp = () => {
             <MessageInput className="flex items-center gap-2 relative">
               <div className="relative">
                 <SmileIcon
-                className="cursor-pointer text-center hover:text-[#4caf50]"
+                className="cursor-pointer text-center hover:text-green-700"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 />
                 {showEmojiPicker && (
@@ -641,7 +642,7 @@ const ChatApp = () => {
               </div>
               <div className="relative">
                 <Paperclip
-                className="cursor-pointer text-center hover:text-[#4caf50]"
+                className="cursor-pointer text-center hover:text-green-700"
                 onClick={() => setShowMenu(!showMenu)}
                 />
 
@@ -677,7 +678,7 @@ const ChatApp = () => {
               />
   
               <button
-              className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-[#4caf50] text-white hover:bg-green-500"
+              className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-green-700 text-white hover:bg-green-400"
               onClick={handleSendMessage}
               >
                 {newMessage.trim() ? <Send size={20} /> : <Mic size={20} />}
@@ -769,10 +770,10 @@ const ChatApp = () => {
                         {showWallet && (
                             <div className="absolute bottom-10 -left-40 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-50">
                             <ul className="py-2 text-sm text-gray-700">
-                              <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                              <li className="flex items-center px-4 py-2 cursor-pointer hover:bg-green-700 hover:text-white">
                                 <Wallet size={16} className="mr-2" /> Add Money 
                               </li>
-                              <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                              <li className="flex items-center px-4 py-2 hover:bg-green-700 hover:text-white cursor-pointer">
                                 <Landmark   size={16} className="mr-2" /> withdraw
                               </li>
                             </ul>
@@ -785,26 +786,66 @@ const ChatApp = () => {
                 </div>
 
                 {/* Last Order */}
-                <div className="last-order">
-                  <div className="last-order-header">
-                    <h3 className="last-order-id">88574</h3>
-                    <div className="add-money" style={{ display: showSearchOrder ? "block" : "none" }}>  
-                      <input type="text" className="focus:outline-none focus:ring-0 border-b-2 border-gray-400" placeholder="search order" />
+                <div className="last-order overflow-auto max-h-90 relative">
+                  
+                  <div className=" mb-4 sticky top-0 z-10 bg-white">
+                    <h1 className="font-bold mb-2">My Orders</h1>
+                    <div className="flex gap-6 items-center">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                      <input 
+                        type="text" 
+                        className="pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#4caf50]" 
+                        placeholder="Search order" 
+                      />
                     </div>
-                    <button className="search-button"onClick={() => setShowSearchOrder(!showSearchOrder)}>
-                      <SearchIcon className="icon" size={20} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <ListFilter className="icon" />
+                      <p>Filters</p>
+                    </div>
+                    </div>
                   </div>
-                  <div className="last-order-status">
-                    <span className="status-tag">FULFILLED</span>
-                    <span className="order-date">Ordered at Jul 30, 2024, 11:16:59 PM</span>
-                  </div>
-                  <div className="last-order-footer">
-                    <span className="order-total">₹911.00</span>
-                    <button className="details-button">
-                      Details
-                      <ChevronDownIcon className="icon" />
-                    </button>
+                  <div className="flex-col gap-2.5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        {/* <div className="h-20 w-20 bg-amber-300">1</div> */}
+                        <img src="https://m.media-amazon.com/images/I/61YsjBvrKmL._AC_UF1000,1000_QL80_.jpg" className="-20 w-20" alt="" />
+                      </div>
+                      <div>
+                        <span className="block">POCO X7 Pro 5G</span>
+                        <span className="order-date block">Delivered on Jan 3,2025</span>
+                        <RatingStars rating={4} />  {/* Replace 'FULFILLED' with a 4-star rating */}
+                      </div>
+                      <div>
+                        <ChevronDownIcon className="icon" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjD1Cw_N6FsbkMk2ihlD3xIto_eyvg4QexQ&s" className="-20 w-20" alt="" />
+                      </div>
+                      <div>
+                        <span className="block">Fire-Boltt Smartwatch</span>
+                        <span className="order-date block">Delivered on nov 30,2024</span>
+                        <RatingStars rating={3} />  
+                      </div>
+                      <div>
+                        <ChevronDownIcon className="icon" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxZ-yh5pgiE4k8TP75SXdYXgRG7GYuvxSY1g&s" className="-20 w-20" alt="" />
+                      </div>
+                      <div>
+                        <span className="block">Back Cover for POCO X3</span>
+                        <span className="order-date block">Delivered on feb 20,2024</span>
+                        <RatingStars rating={2} />  
+                      </div>
+                      <div>
+                        <ChevronDownIcon className="icon" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
