@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
-import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon,Search } from "lucide-react"; // Imported icons
+import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon,Search,X } from "lucide-react"; // Imported icons
 import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, Wallet ,Landmark, ListFilter,} from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
@@ -471,10 +471,17 @@ const ChatApp = () => {
   const [isChatbot, setIsChatbot] = useState(true);
   const [assistedSalesMode, setAssistedSalesMode] = useState("Chatbot");
   const [showWallet, setShowWallet] = useState(false);
-  const [showSearchchat, setShowSearchchat]= useState(false);
+  const [activetab, setactivetab]= useState("Address");
   const [email, setEmail] = useState("mjperso15@gmail.com");
   const [address, setAddress] = useState("No address provided");
   const [editingField, setEditingField] = useState(null);
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  // The handleSearch only updates the search text:
+const handleSearch = (e) => {
+  setSearchText(e.target.value.toLowerCase());
+};
   
   const handleEdit = (field) => {
     setEditingField(field);
@@ -585,7 +592,7 @@ const ChatApp = () => {
               </div>
               <div className="contact-details">
                 <div className="contact-name">{contact.name}</div>
-                <div className="last-message">{contact.lastMessage}</div>
+                <div className="last-message overflow-hidden h-3.5 w-50">{contact.lastMessage}</div>
               </div>
               <div className="timestamp">
                 {dayjs(contact.timestamp).format("hh:mm A")}
@@ -599,7 +606,7 @@ const ChatApp = () => {
         {selectedContact ? (
           <>
             <ChatHeader>
-              <div className="header-details" >
+              <div className="header-details relative" >
                 <div className="avatar-header cursor-pointer" onClick={() => setSelectedContact(!selectedContact)}>
                   <div className="avatar headavatar">
                     {selectedContact.name?.[0]?.toUpperCase() || selectedContact.phone_number?.[0]}
@@ -610,10 +617,38 @@ const ChatApp = () => {
                   </div>
                 </div>
               </div>
-              <div className="search">
-                <div className="search-chat cursor-pointer" >
-                  <SearchIcon className="icon" onClick={() => { /* handle search click */ }} width={20} />
-                </div>
+              <div className="search relative">
+                 {/* Search Icon */}
+            <div className="cursor-pointer relative">
+              <SearchIcon
+                className="text-white hover:text-gray-600"
+                width={20}
+                onClick={() => setSearchActive(!searchActive)}
+              />
+
+              {/* Search Container (Appears Below Chat Header, Bottom Right) */}
+              {searchActive && (
+                 <div className="absolute top-10 right-0 w-72 bg-white border border-gray-300 rounded-lg shadow-lg mt-2 z-20  flex items-center">
+                 <input
+                   type="text"
+                   placeholder="Search within chat"
+                   value={searchText}
+                   onChange={(e) => setSearchText(e.target.value)}
+                   className="flex-1 px-3 py-2 text-gray-800 placeholder-gray-400 focus:outline-none"
+                 />
+                 {searchText && (
+                    <X
+                    size={20}
+                    className="text-gray-500 hover:text-red-500 cursor-pointer mr-2"
+                    onClick={() => {
+                      setSearchText(""); // Clear the search text
+                      setSearchActive(false); // Close the search container
+                    }}
+                  />
+                 )}
+               </div>
+              )}
+            </div>
               </div>
             </ChatHeader>
 
@@ -754,15 +789,15 @@ const ChatApp = () => {
               <>
                 {/* Order Summary Cards */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="order-summary-card">
+                  <div className="order-summary-card p-1.5">
                     <h3 className="order-summary-title">Orders Count</h3>
                     <p className="order-summary-value">3</p>
                   </div>
-                  <div className="order-summary-card">
+                  <div className="order-summary-card p-1.5">
                     <h3 className="order-summary-title">Total Order Value</h3>
-                    <p className="order-summary-value">₹2.58k</p>
+                    <p className="order-summary-value">₹50k</p>
                   </div>
-                  <div className="order-summary-card">
+                  <div className="order-summary-card p-1.5">
                     <div className="wallet-header">
                       <h3 className="order-summary-title">Wallet</h3>
                       <button className="edit-button relative">
@@ -770,10 +805,10 @@ const ChatApp = () => {
                         {showWallet && (
                             <div className="absolute bottom-10 -left-40 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-50">
                             <ul className="py-2 text-sm text-gray-700">
-                              <li className="flex items-center px-4 py-2 cursor-pointer hover:bg-green-700 hover:text-white">
+                              <li className="flex items-center px-4 py-2 cursor-pointer hover:bg-green-500 hover:text-white">
                                 <Wallet size={16} className="mr-2" /> Add Money 
                               </li>
-                              <li className="flex items-center px-4 py-2 hover:bg-green-700 hover:text-white cursor-pointer">
+                              <li className="flex items-center px-4 py-2 hover:bg-green-500 hover:text-white cursor-pointer">
                                 <Landmark   size={16} className="mr-2" /> withdraw
                               </li>
                             </ul>
@@ -812,7 +847,7 @@ const ChatApp = () => {
                         <img src="https://m.media-amazon.com/images/I/61YsjBvrKmL._AC_UF1000,1000_QL80_.jpg" className="-20 w-20" alt="" />
                       </div>
                       <div>
-                        <span className="block">POCO X7 Pro 5G</span>
+                        <span className="block product-name">POCO X7 Pro 5G</span>
                         <span className="order-date block">Delivered on Jan 3,2025</span>
                         <RatingStars rating={4} />  {/* Replace 'FULFILLED' with a 4-star rating */}
                       </div>
@@ -825,7 +860,7 @@ const ChatApp = () => {
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjD1Cw_N6FsbkMk2ihlD3xIto_eyvg4QexQ&s" className="-20 w-20" alt="" />
                       </div>
                       <div>
-                        <span className="block">Fire-Boltt Smartwatch</span>
+                        <span className="block product-name">Fire-Boltt Smartwatch</span>
                         <span className="order-date block">Delivered on nov 30,2024</span>
                         <RatingStars rating={3} />  
                       </div>
@@ -838,7 +873,7 @@ const ChatApp = () => {
                       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxZ-yh5pgiE4k8TP75SXdYXgRG7GYuvxSY1g&s" className="-20 w-20" alt="" />
                       </div>
                       <div>
-                        <span className="block">Back Cover for POCO X3</span>
+                        <span className="block product-name">Back Cover for POCO X3</span>
                         <span className="order-date block">Delivered on feb 20,2024</span>
                         <RatingStars rating={2} />  
                       </div>
@@ -851,9 +886,32 @@ const ChatApp = () => {
 
                 {/* WooCommerce Notes */}
                 <div className="woocommerce-notes">
-                  <div className="notes-tabs">
-                    <button className="notes-tab">Address</button>
-                    <button className="notes-tab">Note</button>
+                  <div className="notes-tabs flex space-x-4 bg-gray-100 p-2 rounded-lg w-fit mx-auto justify-center text-center">
+                    {/* <button className="notes-tab">Address</button>
+                    <button className="notes-tab">Note</button> */}
+                    <button
+                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${
+                activetab === "Address"
+                ? "bg-green-600 text-white shadow-lg scale-105"
+                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                }`}
+                onClick={() => setactivetab("Address")}
+                >
+                  Address
+                </button>
+
+                <button
+                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${
+                activetab === "Note"
+                ? "bg-green-600 text-white shadow-lg scale-105"
+                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                }`}
+                onClick={() => setactivetab("Note")}
+                >
+                  Note
+                </button>
                   </div>
                   <div className="notes-content space-y-4">
                   <div className="note flex flex-col">
@@ -870,7 +928,7 @@ const ChatApp = () => {
               <span className="note-value">{email}</span>
             )}
             {editingField === "email" ? (
-              <button className="ml-2 bg-blue-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
+              <button className="ml-2 bg-green-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
             ) : (
               <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("email")}>Edit</button>
             )}
@@ -890,13 +948,13 @@ const ChatApp = () => {
               <span className="note-value">{address}</span>
             )}
             {editingField === "address" ? (
-              <button className="ml-2 bg-blue-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
+              <button className="ml-2 bg-green-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
             ) : (
               <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("address")}>Edit</button>
             )}
           </div>
         </div>
-      </div>
+                  </div>
                 </div>
               </>
             )}
