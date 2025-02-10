@@ -4,8 +4,8 @@ import { io } from "socket.io-client";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
-import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon,Search,X } from "lucide-react"; // Imported icons
-import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, Wallet ,Landmark, ListFilter,} from "lucide-react";
+import { BanIcon, ChevronDownIcon, EditIcon, SearchIcon, Mic, Send, SmileIcon, Search, X, Trash2, Pencil, Check } from "lucide-react"; // Imported icons
+import { Paperclip, Image, Camera, FileText, User, BotIcon, UserIcon, Wallet, Landmark, ListFilter, } from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import RatingStars from "./LastOrder/RatingStars";
@@ -220,7 +220,7 @@ const ProfileHeader = styled.div`
     gap: 16px;
   }
   .avatar{
-   width: 64px;
+    width: 64px;
     height: 64px;
     background-color: #16a34a;
     border-radius: 50%;
@@ -471,18 +471,45 @@ const ChatApp = () => {
   const [isChatbot, setIsChatbot] = useState(true);
   const [assistedSalesMode, setAssistedSalesMode] = useState("Chatbot");
   const [showWallet, setShowWallet] = useState(false);
-  const [activetab, setactivetab]= useState("Address");
+  const [activetab, setactivetab] = useState("Address");
   const [email, setEmail] = useState("mjperso15@gmail.com");
   const [address, setAddress] = useState("No address provided");
   const [editingField, setEditingField] = useState(null);
   const [searchActive, setSearchActive] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [newNote, setNewNote] = useState("");
+  const [notes, setNotes] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editText, setEditText] = useState("");
+  //handle to add,edit and deleit Notes 
+  const handleAddNote = () => {
+    if (newNote.trim() !== "") {
+      setNotes([...notes, newNote]);
+      setNewNote("");
+    }
+  };
 
-  // The handleSearch only updates the search text:
-const handleSearch = (e) => {
-  setSearchText(e.target.value.toLowerCase());
-};
-  
+  const handleDeleteNote = (index) => {
+    setNotes(notes.filter((_, i) => i !== index));
+  };
+
+  const handleEditNote = (index) => {
+    setEditingIndex(index);
+    setEditText(notes[index]);
+  };
+
+  const handleSaveEdit = (index) => {
+    const updatedNotes = [...notes];
+    updatedNotes[index] = editText;
+    setNotes(updatedNotes);
+    setEditingIndex(null);
+  };
+
+  // The handleaddres only updates the Addres text:
+  const handleSearch = (e) => {
+    setSearchText(e.target.value.toLowerCase());
+  };
+
   const handleEdit = (field) => {
     setEditingField(field);
   };
@@ -559,7 +586,7 @@ const handleSearch = (e) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
+  //Handle to emoji section
   const handleEmojiSelect = (emoji) => {
     console.log("Full Emoji Object:", emoji);
     console.log("Selected Emoji:", emoji.native);
@@ -583,9 +610,9 @@ const handleSearch = (e) => {
         <ContactList>
           {contacts.map((contact) => (
             <ContactItem
-            key={contact.id}
-            selected={selectedContact?.id === contact.id}
-            onClick={() => setSelectedContact(contact)}
+              key={contact.id}
+              selected={selectedContact?.id === contact.id}
+              onClick={() => setSelectedContact(contact)}
             >
               <div className="avatar">
                 {contact.name?.[0]?.toUpperCase() || contact.phone_number?.[0]}
@@ -618,37 +645,37 @@ const handleSearch = (e) => {
                 </div>
               </div>
               <div className="search relative">
-                 {/* Search Icon */}
-            <div className="cursor-pointer relative">
-              <SearchIcon
-                className="text-white hover:text-gray-600"
-                width={20}
-                onClick={() => setSearchActive(!searchActive)}
-              />
-
-              {/* Search Container (Appears Below Chat Header, Bottom Right) */}
-              {searchActive && (
-                 <div className="absolute top-10 right-0 w-72 bg-white border border-gray-300 rounded-lg shadow-lg mt-2 z-20  flex items-center">
-                 <input
-                   type="text"
-                   placeholder="Search within chat"
-                   value={searchText}
-                   onChange={(e) => setSearchText(e.target.value)}
-                   className="flex-1 px-3 py-2 text-gray-800 placeholder-gray-400 focus:outline-none"
-                 />
-                 {searchText && (
-                    <X
-                    size={20}
-                    className="text-gray-500 hover:text-red-500 cursor-pointer mr-2"
-                    onClick={() => {
-                      setSearchText(""); // Clear the search text
-                      setSearchActive(false); // Close the search container
-                    }}
+                {/* Search Icon */}
+                <div className="cursor-pointer relative">
+                  <SearchIcon
+                    className="text-white hover:text-gray-600"
+                    width={20}
+                    onClick={() => setSearchActive(!searchActive)}
                   />
-                 )}
-               </div>
-              )}
-            </div>
+
+                  {/* Search Container (Appears Below Chat Header, Bottom Right) */}
+                  {searchActive && (
+                    <div className="absolute top-10 right-0 w-72 bg-white border border-gray-300 rounded-lg shadow-lg mt-2 z-20  flex items-center">
+                      <input
+                        type="text"
+                        placeholder="Search within chat"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        className="flex-1 px-3 py-2 text-gray-800 placeholder-gray-400 focus:outline-none"
+                      />
+                      {searchText && (
+                        <X
+                          size={20}
+                          className="text-gray-500 hover:text-red-500 cursor-pointer mr-2"
+                          onClick={() => {
+                            setSearchText(""); // Clear the search text
+                            setSearchActive(false); // Close the search container
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </ChatHeader>
 
@@ -666,8 +693,8 @@ const handleSearch = (e) => {
             <MessageInput className="flex items-center gap-2 relative">
               <div className="relative">
                 <SmileIcon
-                className="cursor-pointer text-center hover:text-green-700"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className="cursor-pointer text-center hover:text-green-700"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 />
                 {showEmojiPicker && (
                   <div className="absolute bottom-12 left-0 z-50">
@@ -677,8 +704,8 @@ const handleSearch = (e) => {
               </div>
               <div className="relative">
                 <Paperclip
-                className="cursor-pointer text-center hover:text-green-700"
-                onClick={() => setShowMenu(!showMenu)}
+                  className="cursor-pointer text-center hover:text-green-700"
+                  onClick={() => setShowMenu(!showMenu)}
                 />
 
                 {showMenu && (
@@ -701,20 +728,20 @@ const handleSearch = (e) => {
                 )}
               </div>
               <input
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#4caf50]"
-              placeholder="Type a message"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => {
-              if (e.key === "Enter" && newMessage.trim()) {
-                handleSendMessage();
-              }
-              }}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#4caf50]"
+                placeholder="Type a message"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newMessage.trim()) {
+                    handleSendMessage();
+                  }
+                }}
               />
-  
+
               <button
-              className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-green-700 text-white hover:bg-green-400"
-              onClick={handleSendMessage}
+                className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-green-700 text-white hover:bg-green-400"
+                onClick={handleSendMessage}
               >
                 {newMessage.trim() ? <Send size={20} /> : <Mic size={20} />}
               </button>
@@ -755,35 +782,33 @@ const handleSearch = (e) => {
                   Block
                 </div>
               </div>
-  
+
               {/* Tabs */}
               <div className="tabs flex space-x-4 bg-gray-100 p-2 rounded-lg w-fit mx-auto justify-center text-center">
                 <button
-                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
-                ${
-                activeTab === "Profile"
-                ? "bg-green-600 text-white shadow-lg scale-105"
-                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
-                }`}
-                onClick={() => setActiveTab("Profile")}
+                  className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${activeTab === "Profile"
+                      ? "bg-green-600 text-white shadow-lg scale-105"
+                      : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                    }`}
+                  onClick={() => setActiveTab("Profile")}
                 >
                   Profile
                 </button>
 
                 <button
-                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
-                ${
-                activeTab === "Assisted Sales"
-                ? "bg-green-600 text-white shadow-lg scale-105"
-                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
-                }`}
-                onClick={() => setActiveTab("Assisted Sales")}
+                  className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${activeTab === "Assisted Sales"
+                      ? "bg-green-600 text-white shadow-lg scale-105"
+                      : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                    }`}
+                  onClick={() => setActiveTab("Assisted Sales")}
                 >
                   Assisted Sales
                 </button>
               </div>
             </ProfileHeader>
-  
+
             {/* Profile Tab Content */}
             {activeTab === "Profile" && (
               <>
@@ -803,16 +828,16 @@ const handleSearch = (e) => {
                       <button className="edit-button relative">
                         <EditIcon className="icon" onClick={() => setShowWallet(!showWallet)} />
                         {showWallet && (
-                            <div className="absolute bottom-10 -left-40 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-50">
+                          <div className="absolute bottom-10 -left-40 stak  mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-md z-50">
                             <ul className="py-2 text-sm text-gray-700">
                               <li className="flex items-center px-4 py-2 cursor-pointer hover:bg-green-500 hover:text-white">
-                                <Wallet size={16} className="mr-2" /> Add Money 
+                                <Wallet size={16} className="mr-2" /> Add Money
                               </li>
                               <li className="flex items-center px-4 py-2 hover:bg-green-500 hover:text-white cursor-pointer">
-                                <Landmark   size={16} className="mr-2" /> withdraw
+                                <Landmark size={16} className="mr-2" /> withdraw
                               </li>
                             </ul>
-                            </div>
+                          </div>
                         )}
                       </button>
                     </div>
@@ -822,22 +847,22 @@ const handleSearch = (e) => {
 
                 {/* Last Order */}
                 <div className="last-order overflow-auto max-h-90 relative">
-                  
+
                   <div className=" mb-4 sticky top-0 z-10 bg-white">
                     <h1 className="font-bold mb-2">My Orders</h1>
                     <div className="flex gap-6 items-center">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                      <input 
-                        type="text" 
-                        className="pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#4caf50]" 
-                        placeholder="Search order" 
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <ListFilter className="icon" />
-                      <p>Filters</p>
-                    </div>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                          type="text"
+                          className="pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#4caf50]"
+                          placeholder="Search order"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <ListFilter className="icon" />
+                        <p>Filters</p>
+                      </div>
                     </div>
                   </div>
                   <div className="flex-col gap-2.5">
@@ -862,7 +887,7 @@ const handleSearch = (e) => {
                       <div>
                         <span className="block product-name">Fire-Boltt Smartwatch</span>
                         <span className="order-date block">Delivered on nov 30,2024</span>
-                        <RatingStars rating={3} />  
+                        <RatingStars rating={3} />
                       </div>
                       <div>
                         <ChevronDownIcon className="icon" />
@@ -870,12 +895,12 @@ const handleSearch = (e) => {
                     </div>
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxZ-yh5pgiE4k8TP75SXdYXgRG7GYuvxSY1g&s" className="-20 w-20" alt="" />
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxZ-yh5pgiE4k8TP75SXdYXgRG7GYuvxSY1g&s" className="-20 w-20" alt="" />
                       </div>
                       <div>
                         <span className="block product-name">Back Cover for POCO X3</span>
                         <span className="order-date block">Delivered on feb 20,2024</span>
-                        <RatingStars rating={2} />  
+                        <RatingStars rating={2} />
                       </div>
                       <div>
                         <ChevronDownIcon className="icon" />
@@ -890,71 +915,143 @@ const handleSearch = (e) => {
                     {/* <button className="notes-tab">Address</button>
                     <button className="notes-tab">Note</button> */}
                     <button
-                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
-                ${
-                activetab === "Address"
-                ? "bg-green-600 text-white shadow-lg scale-105"
-                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
-                }`}
-                onClick={() => setactivetab("Address")}
-                >
-                  Address
-                </button>
+                      className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${activetab === "Address"
+                          ? "bg-green-600 text-white shadow-lg scale-105"
+                          : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                        }`}
+                      onClick={() => setactivetab("Address")}
+                    >
+                      Address
+                    </button>
 
-                <button
-                className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
-                ${
-                activetab === "Note"
-                ? "bg-green-600 text-white shadow-lg scale-105"
-                : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
-                }`}
-                onClick={() => setactivetab("Note")}
-                >
-                  Note
-                </button>
+                    <button
+                      className={`w-40 px-5 py-2 text-sm font-semibold rounded-lg transition-all duration-300 
+                ${activetab === "Note"
+                          ? "bg-green-600 text-white shadow-lg scale-105"
+                          : "bg-white text-green-700 border border-green-400 hover:bg-green-50"
+                        }`}
+                      onClick={() => setactivetab("Note")}
+                    >
+                      Note
+                    </button>
                   </div>
-                  <div className="notes-content space-y-4">
-                  <div className="note flex flex-col">
-          <span className="note-label font-bold">Email Address</span>
-          <div className="note-info flex justify-between items-center">
-            {editingField === "email" ? (
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border p-1 rounded w-full"
-              />
-            ) : (
-              <span className="note-value">{email}</span>
-            )}
-            {editingField === "email" ? (
-              <button className="ml-2 bg-green-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
-            ) : (
-              <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("email")}>Edit</button>
-            )}
-          </div>
-        </div>
-        <div className="note flex flex-col">
-          <span className="note-label font-bold">Address</span>
-          <div className="note-info flex justify-between items-center">
-            {editingField === "address" ? (
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="border p-1 rounded w-full"
-              />
-            ) : (
-              <span className="note-value">{address}</span>
-            )}
-            {editingField === "address" ? (
-              <button className="ml-2 bg-green-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
-            ) : (
-              <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("address")}>Edit</button>
-            )}
-          </div>
-        </div>
-                  </div>
+                  {/* Address */}
+                  {activetab === "Address" && (
+                    <>
+                      <div className="notes-content space-y-4">
+                        <div className="note flex flex-col">
+                          <span className="note-label font-bold">Email Address</span>
+                          <div className="note-info flex justify-between items-center">
+                            {editingField === "email" ? (
+                              <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="border p-1 rounded w-full"
+                              />
+                            ) : (
+                              <span className="note-value">{email}</span>
+                            )}
+                            {editingField === "email" ? (
+                              <button className="ml-2 bg-green-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
+                            ) : (
+                              <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("email")}>Edit</button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="note flex flex-col">
+                          <span className="note-label font-bold">Address</span>
+                          <div className="note-info flex justify-between items-center">
+                            {editingField === "address" ? (
+                              <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                className="border p-1 rounded w-full"
+                              />
+                            ) : (
+                              <span className="note-value">{address}</span>
+                            )}
+                            {editingField === "address" ? (
+                              <button className="ml-2 bg-green-500 text-white px-2 py-1 rounded" onClick={handleSave}>Save</button>
+                            ) : (
+                              <button className="edit-note ml-2 text-blue-500" onClick={() => handleEdit("address")}>Edit</button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {/* Note */}
+                  {activetab === "Note" && (
+                    <>
+                      <div className="notes-section">
+                        <input
+                          type="text"
+                          value={newNote}
+                          onChange={(e) => setNewNote(e.target.value)}
+                          className="border p-2 w-full rounded"
+                          placeholder="Write a note..."
+                        />
+                        <button
+                          className="mt-2 bg-green-500 text-white px-3 py-1 rounded"
+                          onClick={handleAddNote}
+                        >
+                          Add Note
+                        </button>
+                        <div className="notes-list mt-4">
+                          {notes.length > 0 ? (
+                            notes.map((note, index) => (
+                              <div
+                                key={index}
+                                className="note-item flex justify-between items-center bg-gray-200 p-2 rounded mb-2"
+                              >
+                                {editingIndex === index ? (
+                                  <input
+                                    type="text"
+                                    value={editText}
+                                    onChange={(e) => setEditText(e.target.value)}
+                                    className="border p-1 rounded w-full mr-2"
+                                  />
+                                ) : (
+                                  <span>{note}</span>
+                                )}
+
+                                <div className="flex space-x-2">
+                                  {editingIndex === index ? (
+                                    <button
+                                      className="bg-green-500 text-white p-1 rounded"
+                                      onClick={() => handleSaveEdit(index)}
+                                    >
+                                      <Check size={18} />
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="text-green-500 p-1"
+                                      onClick={() => handleEditNote(index)}
+                                    >
+                                      <Pencil size={18} />
+                                    </button>
+                                  )}
+                                  <button
+                                    className="text-red-500 p-1"
+                                    onClick={() => handleDeleteNote(index)}
+                                  >
+                                    <Trash2 size={18} />
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-gray-500">No notes yet. Start by adding one!</p>
+                          )}
+                        </div>
+                      </div>
+
+                    </>
+                  )}
+
                 </div>
               </>
             )}
@@ -965,21 +1062,20 @@ const handleSearch = (e) => {
                 <div className="flex justify-center gap-6">
                   <p className="text-sm font-semibold">Chatbot Assistance</p>
                   <div
-                  className={`relative flex items-center justify-center w-16 h-8 p-1 rounded-full cursor-pointer transition-all duration-500 ${
-                  isChatbot ? "justify-start bg-gray-200" : "justify-end bg-green-400"
-                  }`}
-                  onClick={() => {
-                  toggleMode();
-                  setAssistedSalesMode(isChatbot ? "Human" : "Chatbot"); 
-                  }}
+                    className={`relative flex items-center justify-center w-16 h-8 p-1 rounded-full cursor-pointer transition-all duration-500 ${isChatbot ? "justify-start bg-gray-200" : "justify-end bg-green-400"
+                      }`}
+                    onClick={() => {
+                      toggleMode();
+                      setAssistedSalesMode(isChatbot ? "Human" : "Chatbot");
+                    }}
                   >
                     {/* Toggle Ball */}
                     <div className="w-6 h-6 bg-green-700 rounded-full shadow-md flex items-center justify-center transition-all duration-1000">
-                    {isChatbot ? (
-                      <BotIcon className="w-4 h-4 text-white" onClick={() => setAssistedSalesMode("Chatbot")} />
-                    ) : (
-                      <UserIcon className="w-4 h-4 text-white" onClick={() => setAssistedSalesMode("Human")} />
-                    )}
+                      {isChatbot ? (
+                        <BotIcon className="w-4 h-4 text-white" onClick={() => setAssistedSalesMode("Chatbot")} />
+                      ) : (
+                        <UserIcon className="w-4 h-4 text-white" onClick={() => setAssistedSalesMode("Human")} />
+                      )}
                     </div>
                   </div>
                   <p className="text-sm font-semibold">Human Assistance</p>
@@ -1005,7 +1101,7 @@ const handleSearch = (e) => {
 
           </ProfileContainer>
         </ChatProfile>
-  
+
       )}
     </Container>
 
